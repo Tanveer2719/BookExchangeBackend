@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Registration</title>
+</head>
+<body>
+    <h1>User Registration</h1>
+    
+    <form id="registrationForm">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br>
+
+        <label for="institution">Institution:</label>
+        <input type="text" id="institution" name="institution"><br>
+
+        <label for="phoneNo">Phone Number:</label>
+        <input type="text" id="phoneNo" name="phoneNo"><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email"><br>
+
+        <label for="place">Place:</label>
+        <input type="text" id="place" name="place"><br>
+
+        <label for="upzilla">Upzilla:</label>
+        <input type="text" id="upzilla" name="upzilla"><br>
+
+        <label for="district">District:</label>
+        <input type="text" id="district" name="district"><br>
+
+        <button type="button" onclick="submitRegistration()">Submit</button>
+
+        <br>
+        <span id="result"></span>
+
+    </form>
+
+    <script>
+        function validatePhoneNumber(phoneNumber) {
+            // Regular expression for a Bangladeshi phone number
+            var regex = /^(?:\+88|01)?(?:\d{11}|\d{13})$/;
+        
+            return regex.test(phoneNumber);
+        }
+
+        function submitRegistration() {
+            var phoneNumber = document.getElementById("phoneNo").value;
+            var isValid = validatePhoneNumber(phoneNumber);
+
+            var password = document.getElementById("password").value;
+            var passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+            if (isValid && password.match(passwordRegex)) {
+                var formData = {
+                    "username": document.getElementById("username").value,
+                    "passwordHash": document.getElementById("password").value,
+                    "institution": document.getElementById("institution").value,
+                    "phoneNo": document.getElementById("phoneNo").value,
+                    "email": document.getElementById("email").value,
+                    "place": document.getElementById("place").value,
+                    "upzilla": document.getElementById("upzilla").value,
+                    "district": document.getElementById("district").value
+                };
+    
+                fetch('post/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    },
+                    body: JSON.stringify(formData),
+                })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+
+                var resultElement = document.getElementById("result");
+                resultElement.innerHTML = "User Added Successfully";
+                
+            } else {
+                var resultElement = document.getElementById("result");
+                if(! isValid)
+                    resultElement.innerHTML = "Invalid phone number";
+                else 
+                    resultElement.innerHTML = "Password must be 8 characters long and must contain letters and numbers";
+            } 
+        }
+    </script>
+</body>
+</html>

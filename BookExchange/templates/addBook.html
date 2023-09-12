@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Book</title>
+</head>
+<body>
+    <h1>Add a New Book</h1>
+    <form id="add-book-form">
+        {% csrf_token %}
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title"><br>
+
+        <label for="edition">Edition:</label>
+        <input type="number" id="edition" name="edition"><br>
+
+        <label for="publisher">Publisher:</label>
+        <input type="text" id="publisher" name="publisher"><br>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description"><br>
+
+        <label for="numAuthors">Number of Authors:</label>
+        <input type="number" id="numAuthors" name="numAuthors" min="1"><br>
+        <button type="button" onclick="generateAuthorInputs()">Generate Author Inputs</button>
+        <div id="authorInputs"></div>
+
+        <input type="file" id="image-input" accept="image/*" required>
+
+        <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+
+    <script>
+        function submitForm() {
+            var title = document.getElementById("title").value;
+            var edition = document.getElementById("edition").value;
+            var publisher = document.getElementById("publisher").value;
+            var description = document.getElementById("description").value;
+
+            var numAuthors = parseInt(document.getElementById('numAuthors').value);
+            var authors = [];
+            for (var i = 1; i <= numAuthors; i++) {
+                var authorName = document.getElementById(`authorName${i}`).value;
+                var authorLink = document.getElementById(`authorLink${i}`).value;
+
+                var authorJson = {
+                    name: authorName,
+                    profileLink: authorLink
+                };
+
+                authors.push(authorJson);
+            }
+
+            const inputElement = document.getElementById("image-input");
+            const file = inputElement.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    const base64Data = event.target.result.split(",")[1];
+    
+                    const imageData = {
+                        filename: file.name,
+                        data: base64Data
+                    };
+
+
+                    var jsonData = {
+                        "title": title,
+                        "edition": edition,
+                        "publisher": publisher,
+                        "image": imageData,
+                        "description": description,
+                        "authorsOfBook": authors
+                    };
+
+                    fetch('post/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        },
+                        body: JSON.stringify(jsonData),
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log(data))
+                    .catch(error => console.error('Error:', error));
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function generateAuthorInputs() {
+            var numAuthors = parseInt(document.getElementById('numAuthors').value);
+            var container = document.getElementById('authorInputs');
+            container.innerHTML = '';
+
+            for (var i = 1; i <= numAuthors; i++) {
+                var authorDiv = document.createElement('div');
+                authorDiv.className = 'author';
+                authorDiv.innerHTML = `
+                    <label for="authorName${i}">Author ${i} Name:</label>
+                    <input type="text" id="authorName${i}" name="authorName${i}"><br>
+                    <label for="authorLink${i}">Author ${i} Profile Link:</label>
+                    <input type="text" id="authorLink${i}" name="authorLink${i}"><br>
+                `;
+                container.appendChild(authorDiv);
+            }
+        }
+
+    </script>
+</body>
+</html>

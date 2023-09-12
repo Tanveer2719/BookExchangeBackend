@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Login</title>
+</head>
+<body>
+    <h1>User Login</h1>
+    
+    <form id="registrationForm">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br>
+
+        <button type="button" onclick="submitRegistration()">Submit</button>
+        <br>
+        <span id="result"></span>
+
+    </form>
+    <script>
+        
+        function submitRegistration() {
+           
+            var loginInfo = {
+                "username": document.getElementById("username").value,
+                "passwordHash": document.getElementById("password").value,
+            };
+
+            fetch('post/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+                body: JSON.stringify(loginInfo),
+            })
+            .then(response => response.json())
+            .then(data => {
+                var result = document.getElementById("result");
+                result.innerHTML = JSON.stringify(data);
+            })
+            .catch(error => {
+                var result = document.getElementById("result");
+                result.innerHTML = JSON.stringify(error);
+            });
+            
+        } 
+        
+    </script>
+</body>
+</html>
