@@ -32,6 +32,7 @@ fasteners==0.14.1
 filelock==3.12.0
 frozenlist==1.4.0
 future==0.18.2
+gunicorn==21.2.0
 gyp==0.1
 httplib2==0.20.2
 idna==3.3
@@ -53,6 +54,7 @@ multidict==6.0.4
 netifaces==0.11.0
 oauthlib==3.2.0
 olefile==0.46
+packaging==23.1
 paramiko==2.9.3
 pbr==5.11.1
 pexpect==4.8.0
@@ -95,6 +97,7 @@ virtualenv==20.23.0
 virtualenv-clone==0.5.7
 virtualenvwrapper==4.8.4
 wadllib==1.3.6
+whitenoise==6.5.0
 xdg==5
 xkit==0.0.0
 yarl==1.9.2
